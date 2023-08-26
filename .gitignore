@@ -1,0 +1,5 @@
+word_count/
+.idea/
+data/
+__pycache__
+*/__pycache__
