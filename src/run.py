@@ -19,9 +19,8 @@ def train(config: configs.TrainConfig):
         .getOrCreate()
     )
 
-    schema, select_columns = utils.configure_schema(config.data.columns)
-    data = spark.read.schema(schema).json(config.data.data)
-    df = utils.preprocess(data, select_columns, config.data.size)
+    data = spark.read.option("sep", "\t").option("header", True).csv(config.data.data)
+    df = utils.preprocess(data, config.data.columns, config.data.size)
 
     kmeans_kwargs = dataclasses.asdict(config.kmeans)
     loguru.logger.info("Using kmeans model with parameters: {}", kmeans_kwargs)
@@ -37,8 +36,10 @@ def train(config: configs.TrainConfig):
         distanceMeasure="squaredEuclidean",
     )
     output = model_fit.transform(df)
+    output.show()
+
     score = evaluator.evaluate(output)
     loguru.logger.info("Silhouette Score: {}", score)
 
     loguru.logger.info("Saving to {}", config.save_to)
-    model_fit.save(config.save_to)
+    model_fit.write().overwrite().save(config.save_to)
