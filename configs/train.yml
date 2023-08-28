@@ -1,6 +1,7 @@
 kmeans:
   k: 5
   maxIter: 20
+
   seed: 21
 
 data:

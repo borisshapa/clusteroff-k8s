@@ -1,0 +1,29 @@
+version: "3.10"
+services:
+  web:
+    build: .
+    command: bash -c "python -m scripts.train --config_path=configs/train.yml"
+    image: borisshapa/clusteroff:latest
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - "./configs:/app/configs"
+      - "./models:/app/models"
+      - "./scripts:/app/scripts"
+      - "./src:/app/src"
+
+  cassandra:
+    image: cassandra:3.11
+    command: bash -c "chmod +x cassandra-init.sh && /cassandra-init.sh"
+    ports:
+      - '7000:7000'
+      - '9042:9042'
+    volumes:
+      - './data:/bitnami'
+      - './cassandra-init.sh:/cassandra-init.sh'
+    healthcheck:
+      test: cqlsh -k off
+    environment:
+      - MAX_HEAP_SIZE=256M
+      - HEAP_NEWSIZE=128M

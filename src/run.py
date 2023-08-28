@@ -16,11 +16,18 @@ def train(config: configs.TrainConfig):
         .config("spark.executor.cores", spark_config.executor_cores)
         .config("spark.driver.memory", spark_config.driver_memory)
         .config("spark.executor.memory", spark_config.executor_memory)
+        .config("spark.cassandra.connection.host", "cassandra")
+        .config("spark.cassandra.connection.port", "9042")
         .getOrCreate()
     )
-
-    data = spark.read.option("sep", "\t").option("header", True).csv(config.data.data)
+    data = (
+        spark.read.format("org.apache.spark.sql.cassandra")
+        .options(table="food", keyspace="off")
+        .load()
+    )
     df = utils.preprocess(data, config.data.columns, config.data.size)
+
+    df.show()
 
     kmeans_kwargs = dataclasses.asdict(config.kmeans)
     loguru.logger.info("Using kmeans model with parameters: {}", kmeans_kwargs)
@@ -43,3 +50,8 @@ def train(config: configs.TrainConfig):
 
     loguru.logger.info("Saving to {}", config.save_to)
     model_fit.write().overwrite().save(config.save_to)
+
+    loguru.logger.info("Writing result into database")
+    output.select("code", "prediction").write.format("org.apache.spark.sql.cassandra").options(
+        table="food", keyspace="off"
+    ).mode("append").save()
