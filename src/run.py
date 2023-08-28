@@ -22,7 +22,7 @@ def train(config: configs.TrainConfig):
     )
     data = (
         spark.read.format("org.apache.spark.sql.cassandra")
-        .options(table="food", keyspace="off")
+        .options(**dataclasses.asdict(config.db))
         .load()
     )
     df = utils.preprocess(data, config.data.columns, config.data.size)
@@ -52,6 +52,6 @@ def train(config: configs.TrainConfig):
     model_fit.write().overwrite().save(config.save_to)
 
     loguru.logger.info("Writing result into database")
-    output.select("code", "prediction").write.format("org.apache.spark.sql.cassandra").options(
-        table="food", keyspace="off"
-    ).mode("append").save()
+    output.select("code", "prediction").write.format(
+        "org.apache.spark.sql.cassandra"
+    ).options(table="food", keyspace="off").mode("append").save()

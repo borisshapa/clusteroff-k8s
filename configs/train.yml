@@ -17,4 +17,8 @@ spark:
   executor_cores: 1
   driver_cores: 1
 
+db:
+  keyspace: "off"
+  table: "food"
+
 save_to: "models/clusteroff"

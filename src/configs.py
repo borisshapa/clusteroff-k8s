@@ -27,8 +27,15 @@ class SparkConfig:
 
 
 @dataclasses.dataclass
+class DbConfig:
+    keyspace: str = dataclasses.field(default="off")
+    table: str = dataclasses.field(default="food")
+
+
+@dataclasses.dataclass
 class TrainConfig:
     kmeans: KMeansConfig = dataclasses.field(default_factory=KMeansConfig)
     data: DataConfig = dataclasses.field(default_factory=DataConfig)
     spark: SparkConfig = dataclasses.field(default_factory=SparkConfig)
+    db: DbConfig = dataclasses.field(default=DbConfig)
     save_to: str = dataclasses.field(default="models/clusteroff")
