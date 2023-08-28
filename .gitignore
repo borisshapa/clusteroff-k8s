@@ -5,7 +5,7 @@ data/
 __pycache__
 */__pycache__
 
-datamart/.bsp
 datamart/.idea
 datamart/target
 datamart/untitled
+datamart/project/target
