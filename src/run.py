@@ -4,7 +4,7 @@ import loguru
 import pyspark
 from pyspark.ml import clustering, evaluation
 
-from src import configs, utils
+from src import configs, datamart, utils
 
 
 def train(config: configs.TrainConfig):
@@ -18,16 +18,12 @@ def train(config: configs.TrainConfig):
         .config("spark.executor.memory", spark_config.executor_memory)
         .config("spark.cassandra.connection.host", "cassandra")
         .config("spark.cassandra.connection.port", "9042")
+        .config("spark.jars", config.datamart)
         .getOrCreate()
     )
-    data = (
-        spark.read.format("org.apache.spark.sql.cassandra")
-        .options(**dataclasses.asdict(config.db))
-        .load()
-    )
-    df = utils.preprocess(data, config.data.columns, config.data.size)
 
-    df.show()
+    dm = datamart.DataMart(spark, config)
+    df = dm.get_food()
 
     kmeans_kwargs = dataclasses.asdict(config.kmeans)
     loguru.logger.info("Using kmeans model with parameters: {}", kmeans_kwargs)
@@ -52,6 +48,4 @@ def train(config: configs.TrainConfig):
     model_fit.write().overwrite().save(config.save_to)
 
     loguru.logger.info("Writing result into database")
-    output.select("code", "prediction").write.format(
-        "org.apache.spark.sql.cassandra"
-    ).options(table="food", keyspace="off").mode("append").save()
+    dm.set_predictions(output)

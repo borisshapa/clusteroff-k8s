@@ -4,7 +4,7 @@ import ujson
 from pyspark.ml import feature
 from pyspark.sql import types, functions
 
-FEATURES_COLUMN = "scaled_feature"
+FEATURES_COLUMN = "scaled_features"
 
 
 def preprocess(

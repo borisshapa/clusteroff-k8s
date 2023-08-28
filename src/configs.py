@@ -38,4 +38,5 @@ class TrainConfig:
     data: DataConfig = dataclasses.field(default_factory=DataConfig)
     spark: SparkConfig = dataclasses.field(default_factory=SparkConfig)
     db: DbConfig = dataclasses.field(default=DbConfig)
+    datamart: str = dataclasses.field(default="jars/datamart.jar")
     save_to: str = dataclasses.field(default="models/clusteroff")

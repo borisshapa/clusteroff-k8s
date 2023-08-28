@@ -1,7 +1,11 @@
 word_count/
 models/
-datamart/
 .idea/
 data/
 __pycache__
 */__pycache__
+
+datamart/.bsp
+datamart/.idea
+datamart/target
+datamart/untitled
