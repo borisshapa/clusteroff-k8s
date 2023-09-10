@@ -30,7 +30,7 @@ class SparkConfig:
 class DbConfig:
     keyspace: str = dataclasses.field(default="off")
     table: str = dataclasses.field(default="food")
-
+    host: str = dataclasses.field(default="cassandra")
 
 @dataclasses.dataclass
 class TrainConfig:

@@ -1,0 +1,54 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: clusteroff
+  namespace: default
+spec:
+  type: Python
+  pythonVersion: "3"
+  image: "borisshapa/clusteroff-datamart:latest"
+  imagePullPolicy: Always
+  mainApplicationFile: "local:///app/scripts/train.py"
+  arguments:
+    - "--config_path=configs/train.yml"
+  sparkVersion: "3.4.1"
+  sparkConf:
+    spark.cassandra.connection.host: "cassandra"
+  restartPolicy:
+    type: OnFailure
+    onFailureRetries: 3
+    onFailureRetryInterval: 10
+  deps:
+    jars:
+      - local:///app/datamart/target/scala-2.12/datamart_2.12-0.1.0-SNAPSHOT.jar
+      - local:///opt/spark/jars/spark-cassandra-connector.jar
+  volumes:
+    - name: "src"
+      hostPath:
+        path: "/clusteroff/src"
+    - name: "configs"
+      hostPath:
+        path: "/clusteroff/configs"
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "4g"
+    labels:
+      version: 3.4.1
+    serviceAccount: spark
+    volumeMounts:
+      - name: "src"
+        mountPath: /app/src
+      - name: "configs"
+        mountPath: /app/configs
+  executor:
+    cores: 1
+    instances: 1
+    memory: "16g"
+    labels:
+      version: 3.4.1
+    volumeMounts:
+      - name: "src"
+        mountPath: /app/src
+      - name: "configs"
+        mountPath: /app/configs

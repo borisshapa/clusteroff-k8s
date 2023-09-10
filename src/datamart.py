@@ -8,7 +8,7 @@ class DataMart:
         self.spark = spark
         sc = spark.sparkContext
 
-        db_config = sc._jvm.db.DbConfig(config.db.keyspace, config.db.table)
+        db_config = sc._jvm.db.DbConfig(config.db.keyspace, config.db.table, config.db.host)
         spark_config = sc._jvm.db.SparkConfig(
             config.spark.app_name,
             config.spark.deploy_mode,

@@ -5,7 +5,7 @@ kmeans:
   seed: 21
 
 data:
-  data: "data/en.openfoodfacts.org.products.csv"
+  data: "data/products-1k.csv"
   columns: "configs/columns.json"
   size: 10000
 

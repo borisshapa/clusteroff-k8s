@@ -1,4 +1,5 @@
 import dataclasses
+import os
 
 import loguru
 import pyspark
@@ -8,6 +9,9 @@ from src import configs, datamart, utils
 
 
 def train(config: configs.TrainConfig):
+    files = [f for f in os.listdir(".") if os.path.isfile(f)]
+    loguru.logger.info(files)
+
     spark_config = config.spark
     spark = (
         pyspark.sql.SparkSession.builder.appName(spark_config.app_name)
@@ -16,9 +20,9 @@ def train(config: configs.TrainConfig):
         .config("spark.executor.cores", spark_config.executor_cores)
         .config("spark.driver.memory", spark_config.driver_memory)
         .config("spark.executor.memory", spark_config.executor_memory)
-        .config("spark.cassandra.connection.host", "cassandra")
+        .config("spark.cassandra.connection.host", config.db.host)
         .config("spark.cassandra.connection.port", "9042")
-        .config("spark.jars", config.datamart)
+        .config("spark.jars", f"{config.datamart}")
         .getOrCreate()
     )
 
