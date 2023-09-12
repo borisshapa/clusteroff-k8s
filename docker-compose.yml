@@ -7,11 +7,6 @@ services:
     depends_on:
       cassandra:
         condition: service_healthy
-    volumes:
-      - "./configs:/app/configs"
-      - "./models:/app/models"
-      - "./scripts:/app/scripts"
-      - "./src:/app/src"
 
   cassandra:
     image: cassandra:3.11

@@ -13,22 +13,14 @@ spec:
     - "--config_path=configs/train.yml"
   sparkVersion: "3.4.1"
   deps:
-    packages:
-      - com.datastax.spark:spark-cassandra-connector_2.12:3.4.1
+    jars:
+      - local:///opt/spark/jars/spark-cassandra-connector.jar
   sparkConf:
     spark.cassandra.connection.host: "cassandra"
-    spark.jars.ivy: "/tmp/ivy"
   restartPolicy:
     type: OnFailure
     onFailureRetries: 3
     onFailureRetryInterval: 10
-  volumes:
-    - name: "src"
-      hostPath:
-        path: "/clusteroff/src"
-    - name: "configs"
-      hostPath:
-        path: "/clusteroff/configs"
   driver:
     cores: 1
     coreLimit: "1200m"
@@ -36,19 +28,9 @@ spec:
     labels:
       version: 3.4.1
     serviceAccount: spark
-    volumeMounts:
-      - name: "src"
-        mountPath: /app/src
-      - name: "configs"
-        mountPath: /app/configs
   executor:
     cores: 1
     instances: 1
     memory: "16g"
     labels:
       version: 3.4.1
-    volumeMounts:
-      - name: "src"
-        mountPath: /app/src
-      - name: "configs"
-        mountPath: /app/configs

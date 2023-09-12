@@ -16,7 +16,10 @@ spec:
     type: OnFailure
     onFailureRetries: 3
     onFailureRetryInterval: 10
-  volume:
+  volumes:
+    - name: "data"
+      hostPath:
+        path: "/clusteroff/data"
   driver:
     cores: 1
     coreLimit: "1200m"
@@ -24,9 +27,15 @@ spec:
     labels:
       version: 3.4.1
     serviceAccount: spark
+    volumeMounts:
+      - name: data
+        mountPath: /app/data
   executor:
     cores: 1
     instances: 1
     memory: "16g"
     labels:
       version: 3.4.1
+    volumeMounts:
+      - name: data
+        mountPath: /app/data
